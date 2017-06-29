@@ -2,51 +2,50 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class MyLobbyNetworkManager : NetworkLobbyManager
 {
-    public override void OnLobbyServerConnect(NetworkConnection conn)
+    public Button startButton;
+    private bool allReady;
+    public override void OnLobbyServerPlayersReady()
     {
-        Debug.Log("Lobby Server Ready");
+        Debug.Log("ALL READY");
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
-        base.OnServerAddPlayer(conn, playerControllerId);
+        base.OnServerAddPlayer(conn, playerControllerId);    
     }
-
-    private void OnGUI()
+   
+    private void Update()
     {
-        bool allReady = true;
         for (int i = 0; i < lobbySlots.Length; i++)
         {
             if (!lobbySlots[i]) continue;
-            if(!lobbySlots[i].readyToBegin)
+            if (!lobbySlots[i].readyToBegin)
             {
                 allReady = false;
+                Debug.Log(allReady);
+                break;
+            }
+            else
+            {
+                allReady = true;
+                Debug.Log(allReady);
                 break;
             }
         }
 
         if (allReady)
         {
-            if (GUILayout.Button("Start"))
-            {
-                ServerChangeScene(playScene);
-            }
+            startButton.gameObject.SetActive(true);
         }
     }
 
-    public override bool OnLobbyServerSceneLoadedForPlayer(GameObject lobbyPlayer, GameObject gamePlayer)
+    public void StartScene()
     {
-        var lobbyScript = lobbyPlayer.GetComponent<LobbyPlayer>();
-        var gamePlayerName = gamePlayer.GetComponent<PlayerName>();
-        var gamePlayerScore = gamePlayer.GetComponent<PlayerScore>();
-
-        gamePlayerName.playerName = lobbyScript.playerName;
-
-        Debug.Log("Set from lobby: " + lobbyScript.playerName);
-        return true;
+        ServerChangeScene(playScene);
+        this.enabled = false;
     }
-
 }

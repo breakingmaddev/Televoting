@@ -8,8 +8,23 @@ public class LobbyPlayer : NetworkLobbyPlayer
     [SyncVar]
     public string playerName = "New Player";
 
-    [SyncVar]
-    public Color colorPlayer = Color.white;
-    
+    private void Update()
+    {
+        if (isLocalPlayer)
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                if (this.readyToBegin)
+                {
+                    SendNotReadyToBeginMessage();
+                }
+
+                else
+                {
+                    SendReadyToBeginMessage();
+                }
+            }
+        }
+    }
 
 }
