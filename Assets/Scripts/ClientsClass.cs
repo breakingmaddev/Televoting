@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
-public class ClientsClass : IComparable<ClientsClass>
+public class ClientsClass : MonoBehaviour, IComparable<ClientsClass>
 {
+
     public string nameClient;
     public int answerChoose;
 

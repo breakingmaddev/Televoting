@@ -19,7 +19,8 @@ public class ServerBehaviour : NetworkBehaviour
     [SyncVar]
     public string questionString;
 
-    public Text feedbackText;
+    public Text feedbackText, questionText, timerText;
+    private GraphLogic refGL;
 
     // Lista delle risposte da mandare ai Clients
     public List<string> answerStringList;
@@ -31,11 +32,14 @@ public class ServerBehaviour : NetworkBehaviour
     {
         StartCoroutine(AddPlayerCO());
         StartCoroutine(TimerCO());
+        refGL = FindObjectOfType<GraphLogic>();
 
+        //TO DO: creare metodo che passa il testo della domanda da file
+        questionText.text = questionString; 
         // Aggiungo al dizionario la lista di Domande e la lista di ClientsClass
         dictVoters.Add(currentQuestion, clientsList);
     }
-
+    
     // Quando il timer finisce lo resetto e disattivo tutti i bottoni sui client e mi faccio mandare la risposta scelta
     public IEnumerator TimerCO()
     {
@@ -43,7 +47,7 @@ public class ServerBehaviour : NetworkBehaviour
         {
             yield return new WaitForSecondsRealtime(1f);
             timer++;
-            Debug.Log(timer);
+            timerText.text = timer.ToString();
         }
        
         timer = 0;
@@ -54,6 +58,8 @@ public class ServerBehaviour : NetworkBehaviour
             player.GetComponent<PlayerBehaviour>().RpcSelectedAnswer();
         }
 
+        StartCoroutine(refGL.CallGraphSetup());
+        
         yield break;
     }
 
