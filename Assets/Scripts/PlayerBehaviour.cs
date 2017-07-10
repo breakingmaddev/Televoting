@@ -96,22 +96,19 @@ public class PlayerBehaviour : NetworkBehaviour
 
     public IEnumerator DisableOtherClientCO()
     {
+        yield return new WaitForSeconds(1f);
         playerIdentifier = SystemInfo.deviceUniqueIdentifier;
         this.gameObject.name = playerIdentifier;
-        yield return new WaitForSeconds(0.5f);
         List<GameObject> playerList = new List<GameObject>();
         playerList.AddRange(GameObject.FindGameObjectsWithTag("Player"));
-        foreach (var player in playerList)
-        {
-            if (!hasAuthority)
-            {
-                player.SetActive(false);
-                Debug.LogError(player.GetComponentInChildren<PlayerBehaviour>().name + " è stato disattivato su questo client");
-                break;
-            }
-            
-        }
 
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            if (!playerList[i].GetComponent<NetworkIdentity>().hasAuthority)
+            {
+                playerList[i].SetActive(false);
+            }
+        }
         //GetComponent<Canvas>().sortingOrder = 1;
         identifierText.text = this.gameObject.name + " - "; // + GetComponent<Canvas>().sortingOrder;
     }
