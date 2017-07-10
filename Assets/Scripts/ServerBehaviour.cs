@@ -7,22 +7,21 @@ using UnityEngine.Networking;
 public class ServerBehaviour : NetworkBehaviour
 {
     public List<ClientsClass> clientsList = new List<ClientsClass>();
-    //public List<string> questionList = new List<string>();
     public Dictionary<int, List<ClientsClass>> dictVoters = new Dictionary<int, List<ClientsClass>>();
 
+    // Contatore della domanda corrente per il dictVoters
     public int currentQuestion = 0;
 
     [SyncVar]
     public float timer = 0f;
     [SyncVar]
     public float totTimer = 5f;
-
     [SyncVar]
     public string questionString;
 
     public Text feedbackText;
 
-    // Lista di stringhe delle Risposte da mandare ai Client
+    // Lista delle risposte da mandare ai Clients
     public List<string> answerStringList;
 
     // Lista di tutti i Clients
@@ -31,10 +30,13 @@ public class ServerBehaviour : NetworkBehaviour
     private void Start()
     {
         StartCoroutine(AddPlayerCO());
-        dictVoters.Add(currentQuestion, clientsList);
         StartCoroutine(TimerCO());
+
+        // Aggiungo al dizionario la lista di Domande e la lista di ClientsClass
+        dictVoters.Add(currentQuestion, clientsList);
     }
 
+    // Quando il timer finisce lo resetto e disattivo tutti i bottoni sui client e mi faccio mandare la risposta scelta
     public IEnumerator TimerCO()
     {
         while (timer < totTimer)
@@ -43,24 +45,25 @@ public class ServerBehaviour : NetworkBehaviour
             timer++;
             Debug.Log(timer);
         }
+       
+        timer = 0;
 
         foreach (var player in playerList)
         {
-            player.GetComponent<PlayerBehaviour>().RpcDeactiveButtons();
+            player.GetComponent<PlayerBehaviour>().RpcDeactiveButton();
+            player.GetComponent<PlayerBehaviour>().RpcSelectedAnswer();
         }
 
         yield break;
     }
 
+    // Mette tutti i giocatori nella lista PlayerList
     public IEnumerator AddPlayerCO()
     {
         yield return new WaitForSeconds(0.5f);
         // lista di player (clients)
         playerList.AddRange(GameObject.FindGameObjectsWithTag("Player"));
-        //for (int i = 0; i < playerList.Count; i++)
-        //{
-        //    playerList[i].tag = "Untagged";
-        //}
+        
         Debug.LogError("Ho fatto la ricerca dei giocatori");
         Debug.LogError("I giocatori ora in gioco sono: " + playerList.Count);
 
@@ -69,12 +72,15 @@ public class ServerBehaviour : NetworkBehaviour
             Debug.LogError(player.GetComponentInChildren<PlayerBehaviour>().name);
         }
 
-        //SetOrderCanvasClient();
+
         SetQuestionOnClient(questionString);
+
         CreateButtonOnClient(answerStringList.Count);
+
         SetAnswerOnClient();
     }
 
+    // Crea i pulsanti premibili dai clients
     public void CreateButtonOnClient(int _numberOfString)
     {
         foreach (var player in playerList)
@@ -83,6 +89,7 @@ public class ServerBehaviour : NetworkBehaviour
         }
     }
 
+    // Setta la domanda a tutti i clients
     public void SetQuestionOnClient(string _question)
     {
         foreach (var player in playerList)
@@ -92,6 +99,7 @@ public class ServerBehaviour : NetworkBehaviour
         Debug.LogError("Ho inviato la domanda a tutti i giocaotri");
     }
 
+    // Mette il testo delle risposte dentro i pulsanti
     public void SetAnswerOnClient()
     {
         for (int i = 0; i < answerStringList.Count; i++)
@@ -104,14 +112,7 @@ public class ServerBehaviour : NetworkBehaviour
         Debug.LogError("Ho inviato le risposte in tutti i giocatori");
     }
     
-    public void SetOrderCanvasClient()
-    {
-        foreach (var player in playerList)
-        {
-            //player.GetComponent<PlayerBehaviour>().RpcSetOrderCanvasClient();
-        }
-    }
-
+    // Prendo la risposta scelta dai clients
     public void SetAnswerOnServer(string _nameSender, int _answerIndex)
     {
         feedbackText.text = "E' stata scelta la risposta " + _answerIndex + " da " + _nameSender;
@@ -122,6 +123,7 @@ public class ServerBehaviour : NetworkBehaviour
 
     }
 
+    // Aggiunge le domande e le risposte date da ogni Clients al dizionario
     public void SetupDictionary(string _nameSender, int _answerIndex)
     {
         ClientsClass newClient = new ClientsClass(_nameSender, _answerIndex);

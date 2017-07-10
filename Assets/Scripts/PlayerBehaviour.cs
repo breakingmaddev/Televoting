@@ -8,14 +8,15 @@ using System.Linq;
 public class PlayerBehaviour : NetworkBehaviour
 {
     public Text questionText, identifierText;
-    public GameObject panelAnswer;
+    public GameObject panelAnswer, answerButton, cancelButton;
 
     private ServerBehaviour refSB;
     private GameObject lastClicked;
 
     public List<GameObject> listButton = new List<GameObject>();
-    public List<GameObject> sortlistButton = new List<GameObject>();
-    public GameObject answerButton;
+
+    // Indice generale per capire quale risposta è stata scelta e quale inviare al server
+    private int indexerAnswer = -1;
 
     [SyncVar]
     public string playerIdentifier;
@@ -27,6 +28,7 @@ public class PlayerBehaviour : NetworkBehaviour
         Debug.LogError("Sono nell'Awake di PlayerBehaviour");
     }
 
+    // Cerco il referimento al Server
     public IEnumerator SearchSBCO()
     {
         while (refSB == null)
@@ -38,45 +40,7 @@ public class PlayerBehaviour : NetworkBehaviour
         yield break;
     }
 
-    [ClientRpc]
-    public void RpcSetQuestion(string _question)
-    {
-        questionText.text = _question;
-        Debug.LogError("Io Client mi sono settato la domanda");
-    }
-
-    [ClientRpc]
-    public void RpcCreateUIButton(int _answerIndex)
-    {
-
-        for (int i = 0; i < _answerIndex; i++)
-        {
-            GameObject newPlayerBase = Instantiate(answerButton);
-            newPlayerBase.gameObject.transform.SetParent(panelAnswer.transform);
-            newPlayerBase.name = "Answer " + i;
-            newPlayerBase.GetComponent<Button>().onClick.AddListener(DoSelectAnswer);
-            listButton.Add(newPlayerBase);
-            Debug.LogError("Io Client mi sono creato il bottone " + newPlayerBase.name);
-        }
-
-        
-    }
-
-    public void DoRpcSetAnswer(string _answerText, int _answerIndex)
-    {
-    
-        RpcSetAnswer(_answerText, _answerIndex);
-   
-    }
-
-    [ClientRpc]
-    public void RpcSetAnswer(string _answerText, int _answerIndex)
-    {
-        
-        listButton[_answerIndex].GetComponentInChildren<Text>().text = _answerText;
-        Debug.LogError("Io Client mi sono settato la risposta del bottone " + listButton[_answerIndex]);
-    }
-
+    // Disabilita gli spawn degli altri client sul Player locale
     public IEnumerator DisableOtherClientCO()
     {
         yield return new WaitForSeconds(1f);
@@ -95,7 +59,44 @@ public class PlayerBehaviour : NetworkBehaviour
         identifierText.text = this.gameObject.name;
     }
 
-    // Seleziona la risposta, la rende verde e poi rende tutte le altre non interattive
+    // Setta il testo alla domanda
+    [ClientRpc]
+    public void RpcSetQuestion(string _question)
+    {
+        questionText.text = _question;
+        Debug.LogError("Io Client mi sono settato la domanda");
+    }
+
+    // Crea il numero di bottoni che il Server gli passa
+    [ClientRpc]
+    public void RpcCreateUIButton(int _answerIndex)
+    {
+        for (int i = 0; i < _answerIndex; i++)
+        {
+            GameObject newPlayerBase = Instantiate(answerButton);
+            newPlayerBase.gameObject.transform.SetParent(panelAnswer.transform);
+            newPlayerBase.name = "Answer " + i;
+            newPlayerBase.GetComponent<Button>().onClick.AddListener(DoSelectAnswer);
+            listButton.Add(newPlayerBase);
+            Debug.LogError("Io Client mi sono creato il bottone " + newPlayerBase.name);
+        }        
+    }
+
+    // Chiama RpcSetAnswer
+    public void DoRpcSetAnswer(string _answerText, int _answerIndex)
+    {
+        RpcSetAnswer(_answerText, _answerIndex);
+    }
+
+    // Setta il testo dentro ogni bottone creato
+    [ClientRpc]
+    public void RpcSetAnswer(string _answerText, int _answerIndex)
+    {      
+        listButton[_answerIndex].GetComponentInChildren<Text>().text = _answerText;
+        Debug.LogError("Io Client mi sono settato la risposta del bottone " + listButton[_answerIndex]);
+    }
+
+    // Seleziona la risposta, la rende verde e poi rende tutti non interattivi
     public void DoSelectAnswer ()
     {
         lastClicked = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
@@ -113,43 +114,45 @@ public class PlayerBehaviour : NetworkBehaviour
 
             else
             {
-                // Inoltre invia al Server un resoconto su chi ha votato cosa
-                CmdSelectAnswer(this.gameObject.name, i);
+                indexerAnswer = i;
                 lastClicked.GetComponent<Button>().interactable = false;
-                Debug.LogError("Lancio il Command per passare i valori al Server");
             }                       
         }
-
-        Debug.LogError("Premuto il bottone: " + lastClicked.name);
     }
 
+    // Disattiva tutti i bottoni
     [ClientRpc]
-    public void RpcDeactiveButtons()
+    public void RpcDeactiveButton()
     {
+        cancelButton.GetComponent<Button>().interactable = false;
         for (int i = 0; i < listButton.Count; i++)
         {
             listButton[i].GetComponent<Button>().interactable = false;
         }
     }
     
+    // Chiama il CmdSelectAnswer
+    [ClientRpc]
+    public void RpcSelectedAnswer()
+    {
+        CmdSelectedAnswer(this.gameObject.name, indexerAnswer);
+    }
+
+    // Per inviare al server la risposta scelta inviando il nome del Giocatore e l'indice
     [Command]
-    public void CmdSelectAnswer(string _playerName, int _index)
+    public void CmdSelectedAnswer(string _playerName, int _index)
     {
         refSB.SetAnswerOnServer(_playerName, _index); 
     }
 
-    public void FindAnswer()
+    // Metodo per resettare Indexeranswer a -1 e mette i bottoni bianchi e li riattiva
+    public void CancelButton()
     {
-
-        // Per trovare ognuno le proprie risposte, ovvero i Children di ogni PanelAnswer
-        for (int i = 0; i < this.transform.childCount; i++)
+        for (int i = 0; i < listButton.Count; i++)
         {
-            listButton.Add(this.transform.GetChild(i).gameObject);
+            listButton[i].GetComponent<Button>().interactable = true;
+            lastClicked.GetComponent<Image>().color = Color.white;
         }
-
-        // Riordina la lista di risposte per essere sincronizzata a come il Server gliele assegna
-        sortlistButton = listButton.OrderBy(go => go.name).ToList();
-        Debug.LogError("Ho riordinato la lista");
+        indexerAnswer = -1;
     }
-
 }
