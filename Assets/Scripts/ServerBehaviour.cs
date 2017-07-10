@@ -6,7 +6,17 @@ using UnityEngine.Networking;
 
 public class ServerBehaviour : NetworkBehaviour
 {
-    
+    public List<ClientsClass> clientsList = new List<ClientsClass>();
+    //public List<string> questionList = new List<string>();
+    public Dictionary<int, List<ClientsClass>> dictVoters = new Dictionary<int, List<ClientsClass>>();
+
+    public int currentQuestion = 0;
+
+    [SyncVar]
+    public float timer = 0f;
+    [SyncVar]
+    public float totTimer = 5f;
+
     [SyncVar]
     public string questionString;
 
@@ -20,7 +30,26 @@ public class ServerBehaviour : NetworkBehaviour
 
     private void Start()
     {
-        StartCoroutine(AddPlayerCO());       
+        StartCoroutine(AddPlayerCO());
+        dictVoters.Add(currentQuestion, clientsList);
+        StartCoroutine(TimerCO());
+    }
+
+    public IEnumerator TimerCO()
+    {
+        while (timer < totTimer)
+        {
+            yield return new WaitForSecondsRealtime(1f);
+            timer++;
+            Debug.Log(timer);
+        }
+
+        foreach (var player in playerList)
+        {
+            player.GetComponent<PlayerBehaviour>().RpcDeactiveButtons();
+        }
+
+        yield break;
     }
 
     public IEnumerator AddPlayerCO()
@@ -83,11 +112,25 @@ public class ServerBehaviour : NetworkBehaviour
         }
     }
 
-
     public void SetAnswerOnServer(string _nameSender, int _answerIndex)
     {
         feedbackText.text = "E' stata scelta la risposta " + _answerIndex + " da " + _nameSender;
         Debug.LogError("E' stata scelta la risposta " + _answerIndex + " da " + _nameSender);
+
+        
+        SetupDictionary(_nameSender, _answerIndex);
+
+    }
+
+    public void SetupDictionary(string _nameSender, int _answerIndex)
+    {
+        ClientsClass newClient = new ClientsClass(_nameSender, _answerIndex);
+        Debug.Log(newClient);
+        
+        clientsList.Add(newClient);
+
+        Debug.Log(dictVoters.Keys.Count + " - " + dictVoters.Values.Count);
+        Debug.Log(clientsList.Count);
     }
 }
 

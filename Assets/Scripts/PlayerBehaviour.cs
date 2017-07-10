@@ -13,7 +13,7 @@ public class PlayerBehaviour : NetworkBehaviour
     private ServerBehaviour refSB;
     private GameObject lastClicked;
 
-    private List<GameObject> listButton = new List<GameObject>();
+    public List<GameObject> listButton = new List<GameObject>();
     public List<GameObject> sortlistButton = new List<GameObject>();
     public GameObject answerButton;
 
@@ -22,12 +22,12 @@ public class PlayerBehaviour : NetworkBehaviour
 
     private void Start()
     {
-        StartCoroutine(SearcSBCO());
+        StartCoroutine(SearchSBCO());
         StartCoroutine(DisableOtherClientCO());
         Debug.LogError("Sono nell'Awake di PlayerBehaviour");
     }
 
-    public IEnumerator SearcSBCO()
+    public IEnumerator SearchSBCO()
     {
         while (refSB == null)
         {
@@ -75,23 +75,6 @@ public class PlayerBehaviour : NetworkBehaviour
         
         listButton[_answerIndex].GetComponentInChildren<Text>().text = _answerText;
         Debug.LogError("Io Client mi sono settato la risposta del bottone " + listButton[_answerIndex]);
-       
-
-        //for (int i = 0; i < _answerList.Count; i++)
-        //{
-        //    GameObject newPlayerBase = Instantiate(answerButton);
-        //    newPlayerBase.gameObject.transform.SetParent(this.gameObject.transform);
-        //    newPlayerBase.name = "Answer " + i;
-
-        //    newPlayerBase.GetComponentInChildren<Text>().text = _answerList[i];
-        //}
-        //Debug.LogError("Ho CREATO UN BOTTONE E INSERITO IL TESTO DELLA RISPOSTA");
-        //GameObject newPlayerBase = Instantiate(answerButton);
-        //NetworkServer.Spawn(newPlayerBase);
-        //newPlayerBase.gameObject.transform.SetParent(this.gameObject.transform);
-        //newPlayerBase.name = "Answer " + _answerIndex;
-
-        //sortlistButton[_answerIndex].GetComponentInChildren<Text>().text = _answerText;
     }
 
     public IEnumerator DisableOtherClientCO()
@@ -109,8 +92,7 @@ public class PlayerBehaviour : NetworkBehaviour
                 playerList[i].SetActive(false);
             }
         }
-        //GetComponent<Canvas>().sortingOrder = 1;
-        identifierText.text = this.gameObject.name + " - "; // + GetComponent<Canvas>().sortingOrder;
+        identifierText.text = this.gameObject.name;
     }
 
     // Seleziona la risposta, la rende verde e poi rende tutte le altre non interattive
@@ -122,9 +104,10 @@ public class PlayerBehaviour : NetworkBehaviour
         
         for (int i = 0; i < listButton.Count; i++)
         {
+
             if (listButton[i].GetComponent<Button>() != lastClicked.GetComponent<Button>())
             {
-                //listButton[i].GetComponent<Button>().interactable = false;
+                listButton[i].GetComponent<Button>().interactable = false;
                 Debug.LogError("Settati tutti gli altri bottoni non interagibili ");
             }
 
@@ -132,14 +115,22 @@ public class PlayerBehaviour : NetworkBehaviour
             {
                 // Inoltre invia al Server un resoconto su chi ha votato cosa
                 CmdSelectAnswer(this.gameObject.name, i);
+                lastClicked.GetComponent<Button>().interactable = false;
                 Debug.LogError("Lancio il Command per passare i valori al Server");
-            }
+            }                       
         }
 
         Debug.LogError("Premuto il bottone: " + lastClicked.name);
     }
 
-
+    [ClientRpc]
+    public void RpcDeactiveButtons()
+    {
+        for (int i = 0; i < listButton.Count; i++)
+        {
+            listButton[i].GetComponent<Button>().interactable = false;
+        }
+    }
     
     [Command]
     public void CmdSelectAnswer(string _playerName, int _index)
