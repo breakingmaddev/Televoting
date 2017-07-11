@@ -13,9 +13,9 @@ public class ServerBehaviour : NetworkBehaviour
     public int currentQuestion = 0;
 
     [SyncVar]
-    public float timer = 0f;
+    public float timerCounter = 5f;
     [SyncVar]
-    public float totTimer = 5f;
+    public float finalTimer = 0f;
     [SyncVar]
     public string questionString;
 
@@ -43,14 +43,15 @@ public class ServerBehaviour : NetworkBehaviour
     // Quando il timer finisce lo resetto e disattivo tutti i bottoni sui client e mi faccio mandare la risposta scelta
     public IEnumerator TimerCO()
     {
-        while (timer < totTimer)
+        while (timerCounter > finalTimer)
         {
             yield return new WaitForSecondsRealtime(1f);
-            timer++;
-            timerText.text = timer.ToString();
+            timerCounter--;
+            timerText.text = (timerCounter / 60).ToString("00") + ":" + (timerCounter % 60).ToString("00");
         }
-       
-        timer = 0;
+
+        //timerCounter = 0;
+        timerText.text = ("Time's Up!");
 
         foreach (var player in playerList)
         {
