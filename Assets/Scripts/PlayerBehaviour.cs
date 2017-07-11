@@ -75,6 +75,7 @@ public class PlayerBehaviour : NetworkBehaviour
         {
             GameObject newPlayerBase = Instantiate(answerButton);
             newPlayerBase.gameObject.transform.SetParent(panelAnswer.transform);
+            newPlayerBase.GetComponent<RectTransform>().localScale = Vector3.one;
             newPlayerBase.name = "Answer " + i;
             newPlayerBase.GetComponent<Button>().onClick.AddListener(DoSelectAnswer);
             listButton.Add(newPlayerBase);

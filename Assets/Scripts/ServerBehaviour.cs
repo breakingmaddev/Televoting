@@ -13,7 +13,7 @@ public class ServerBehaviour : NetworkBehaviour
     public int currentQuestion = 0;
 
     [SyncVar]
-    public float timerCounter = 5f;
+    public float timerCounter = 0f;
     [SyncVar]
     public float finalTimer = 0f;
     [SyncVar]
@@ -31,7 +31,7 @@ public class ServerBehaviour : NetworkBehaviour
     private void Start()
     {
         StartCoroutine(AddPlayerCO());
-        StartCoroutine(TimerCO());
+       
         refGL = FindObjectOfType<GraphLogic>();
 
         //TO DO: creare metodo che passa il testo della domanda da file
@@ -43,6 +43,8 @@ public class ServerBehaviour : NetworkBehaviour
     // Quando il timer finisce lo resetto e disattivo tutti i bottoni sui client e mi faccio mandare la risposta scelta
     public IEnumerator TimerCO()
     {
+        timerCounter = 30f;
+        Debug.LogError("Il timer è partito e parte da: " + timerCounter);
         while (timerCounter > finalTimer)
         {
             yield return new WaitForSecondsRealtime(1f);
@@ -80,12 +82,25 @@ public class ServerBehaviour : NetworkBehaviour
         }
 
 
+        //SetQuestionOnClient(questionString);
+
+        //CreateButtonOnClient(answerStringList.Count);
+
+        //SetAnswerOnClient();
+    }
+
+
+    public void SetupClient()
+    {
         SetQuestionOnClient(questionString);
 
         CreateButtonOnClient(answerStringList.Count);
 
         SetAnswerOnClient();
+
+        StartCoroutine(TimerCO());
     }
+
 
     // Crea i pulsanti premibili dai clients
     public void CreateButtonOnClient(int _numberOfString)
