@@ -36,6 +36,7 @@ public class ServerBehaviour : NetworkBehaviour
 
         //TO DO: creare metodo che passa il testo della domanda da file
         questionText.text = questionString; 
+
         // Aggiungo al dizionario la lista di Domande e la lista di ClientsClass
         dictVoters.Add(currentQuestion, clientsList);
     }
@@ -43,7 +44,7 @@ public class ServerBehaviour : NetworkBehaviour
     // Quando il timer finisce lo resetto e disattivo tutti i bottoni sui client e mi faccio mandare la risposta scelta
     public IEnumerator TimerCO()
     {
-        timerCounter = 30f;
+        timerCounter = 10f;
         Debug.LogError("Il timer è partito e parte da: " + timerCounter);
         while (timerCounter > finalTimer)
         {

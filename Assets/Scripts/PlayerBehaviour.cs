@@ -15,6 +15,8 @@ public class PlayerBehaviour : NetworkBehaviour
 
     public List<GameObject> listButton = new List<GameObject>();
 
+    private int answerCounter;
+
     // Indice generale per capire quale risposta è stata scelta e quale inviare al server
     private int indexerAnswer = -1;
 
@@ -92,8 +94,9 @@ public class PlayerBehaviour : NetworkBehaviour
     // Setta il testo dentro ogni bottone creato
     [ClientRpc]
     public void RpcSetAnswer(string _answerText, int _answerIndex)
-    {      
-        listButton[_answerIndex].GetComponentInChildren<Text>().text = _answerText;
+    {
+        answerCounter = _answerIndex + 1;
+        listButton[_answerIndex].GetComponentInChildren<Text>().text = (answerCounter +". " + _answerText);
         Debug.LogError("Io Client mi sono settato la risposta del bottone " + listButton[_answerIndex]);
     }
 

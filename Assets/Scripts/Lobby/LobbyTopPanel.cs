@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 namespace Prototype.NetworkLobby
 {
@@ -19,14 +20,19 @@ namespace Prototype.NetworkLobby
 
         void Update()
         {
-            if (!isInGame)
-                return;
+            //if (!isInGame)
+            //    return;
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 ToggleVisibility(!isDisplayed);
             }
 
+            if (SceneManager.GetActiveScene().name == ("PlayScene"))
+            {
+                isInGame = true;
+                this.gameObject.SetActive(false);
+            }
         }
 
         public void ToggleVisibility(bool visible)
