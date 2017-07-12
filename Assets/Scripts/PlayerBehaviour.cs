@@ -96,7 +96,7 @@ public class PlayerBehaviour : NetworkBehaviour
     public void RpcSetAnswer(string _answerText, int _answerIndex)
     {
         answerCounter = _answerIndex + 1;
-        listButton[_answerIndex].GetComponentInChildren<Text>().text = (answerCounter +". " + _answerText);
+        listButton[_answerIndex].GetComponentInChildren<Text>().text = (/*answerCounter +". " +*/ _answerText);
         Debug.LogError("Io Client mi sono settato la risposta del bottone " + listButton[_answerIndex]);
     }
 

@@ -22,8 +22,21 @@ public class ServerBehaviour : NetworkBehaviour
     public Text feedbackText, questionText, timerText;
     private GraphLogic refGL;
 
+#region ParserArea
+    public TextAsset csvFile; // file CSV da leggere
+
+    private char lineSeparater = '\n';
+    private char fieldSeparator = ',';
+
+    public int startCSVIndex = 0;
+    public int endCSVIndex = 9;
+
+    List<string> readedData = new List<string>();
+
+#endregion
+
     // Lista delle risposte da mandare ai Clients
-    public List<string> answerStringList;
+    public List<string> answerStringList = new List<string>();
 
     // Lista di tutti i Clients
     public List<GameObject> playerList = new List<GameObject>();
@@ -33,14 +46,57 @@ public class ServerBehaviour : NetworkBehaviour
         StartCoroutine(AddPlayerCO());
        
         refGL = FindObjectOfType<GraphLogic>();
+        
+        //Legge i dati da file
+        readedData.AddRange(csvFile.text.Split(lineSeparater));
+        
+        //Metodo che passa il testo della domanda da file
+        SetDataFromCSV();
 
-        //TO DO: creare metodo che passa il testo della domanda da file
-        questionText.text = questionString; 
+        Invoke("FillDictionary", 1f);
+    }
 
+    public void SetDataFromCSV()
+    {
+        Debug.Log("ReadCSV");
+        //legge e imposta la domanda
+        questionString = readedData[startCSVIndex];
+        questionText.text = questionString;
+
+        //while ((currentLine = csvFile.ReadLine()) != null)
+        //{
+
+        //}
+        //    for (int i = 0; i < readedData; i++)
+        //{
+
+        //}
+
+        //legge la cella in ordine di posizione lungo la prima colonna
+        int j = -1;
+        startCSVIndex += 1;
+        for (int i = startCSVIndex; i < endCSVIndex; i++)
+        {
+            Debug.LogWarning("QUANTE VOLTE: " + readedData[i]);
+            j++;
+            answerStringList.Insert(j, readedData[i]);
+        }
+    }
+
+    public void NextQuestion()
+    {
+        currentQuestion++;
+        startCSVIndex += 10;
+        endCSVIndex += 10;
+        SetDataFromCSV();
+    }
+
+    private void FillDictionary()
+    {
         // Aggiungo al dizionario la lista di Domande e la lista di ClientsClass
         dictVoters.Add(currentQuestion, clientsList);
     }
-    
+
     // Quando il timer finisce lo resetto e disattivo tutti i bottoni sui client e mi faccio mandare la risposta scelta
     public IEnumerator TimerCO()
     {

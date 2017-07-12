@@ -20,6 +20,7 @@ public class GraphLogic : MonoBehaviour {
     public List<ClientsClass> clientList = new List<ClientsClass>();
 
     public Text noVoterText;
+    public GameObject nextQuestionButton;
 
     // Use this for initialization
     void Start () {
@@ -78,6 +79,7 @@ public class GraphLogic : MonoBehaviour {
             clientAnswersList.Add(clientList[i].answerChoose);
         }
         FillGraph();
+        nextQuestionButton.SetActive(true);
     }
 
     //Riempie ogni singola barra in base a quanti utenti hanno dato quella specifica risposta
