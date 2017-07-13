@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GraphLogic : MonoBehaviour {
 
     public int nAnswers;
-    public List<GameObject> answerBar = new List<GameObject>();
+    public List<GameObject> answerBarList = new List<GameObject>();
     public GameObject barPrefab;
 
     public List<Color32> answerColors = new List<Color32>();
@@ -23,11 +23,9 @@ public class GraphLogic : MonoBehaviour {
     public GameObject nextQuestionButton;
 
     // Use this for initialization
-    void Start () {
+    IEnumerator Start () {
         StartCoroutine(SearchSBCO());
-        //Allo start deve prendere il numero di risposte dall'xml in base al contatore della domanda corrente 
-        nAnswers = refSB.answerStringList.Count;
-
+        yield return new WaitForSeconds(0.5f);
         //Passa al graph il valore estratto dal file. Questo metodo verrà chiamato dal server allo scadere del tempo.
         CreateGraph();
 	}
@@ -44,21 +42,38 @@ public class GraphLogic : MonoBehaviour {
         yield break;
     }
 
+    public void RestartGraph()
+    {
+        Debug.Log("RestartGraph");
+        for (int i = 0; i < answerBarList.Count; i++)
+        {
+            Destroy(answerBarList[i]);
+        }
+        answerBarList.Clear();
+        clientList.Clear();
+        clientAnswersList.Clear();
+        CreateGraph();
+    }
 
     //Crea il graph instanziando tante barre quante sono le risposte per quella specifica domanda
     public void CreateGraph()
     {
+        //Allo start deve prendere il numero di risposte daL file in base al contatore della domanda corrente 
+        nAnswers = refSB.answerStringList.Count;
+        noVoterText.text = ("Astenuti: 0%");
+        Debug.Log("CreateGraph");
         for (int i = 0; i < nAnswers; i++)
         {
             GameObject newBar = Instantiate(barPrefab);
             newBar.gameObject.transform.SetParent(this.gameObject.transform);
             newBar.gameObject.GetComponent<RectTransform>().localScale = Vector3.one;
             newBar.gameObject.GetComponent<Image>().color = answerColors[i];
-            answerBar.Add(newBar);
+            answerBarList.Add(newBar);
             //Qua inseriamo il testo e il colore della risposta e della percentuale
-            answerBar[i].gameObject.transform.GetChild(1).GetComponent<Text>().text = refSB.answerStringList[i];
-            answerBar[i].gameObject.transform.GetChild(1).GetComponent<Text>().color = answerColors[i];
-            answerBar[i].gameObject.transform.GetChild(0).GetComponent<Text>().color = answerColors[i];
+            Debug.LogWarning("answer in graph: " + refSB.answerStringList[i]);
+            answerBarList[i].gameObject.transform.GetChild(1).GetComponent<Text>().text = refSB.answerStringList[i];
+            answerBarList[i].gameObject.transform.GetChild(1).GetComponent<Text>().color = answerColors[i];
+            answerBarList[i].gameObject.transform.GetChild(0).GetComponent<Text>().color = answerColors[i];
         }
         //ReadData();
         //FillGraph();
@@ -73,7 +88,8 @@ public class GraphLogic : MonoBehaviour {
 
     public void ReadData()
     {
-        clientList.AddRange(refSB.dictVoters[refSB.currentQuestion]);
+        Debug.Log("CURRENT QUESTION: " + refSB.currentQuestion);
+        clientList.AddRange(refSB.gameSession[refSB.currentQuestion].clientClassArch);
         for (int i = 0; i < clientList.Count; i++)
         {
             clientAnswersList.Add(clientList[i].answerChoose);
@@ -94,7 +110,7 @@ public class GraphLogic : MonoBehaviour {
         float percSingleClient = (100 / clientAnswersList.Count);
         Debug.Log("PercSingleClient: " + percSingleClient);
 
-        for (int i = 0; i < answerBar.Count; i++)
+        for (int i = 0; i < answerBarList.Count; i++)
         {
             sameAnswers = 0;
             for (int j = 0; j < clientAnswersList.Count; j++)
@@ -102,14 +118,14 @@ public class GraphLogic : MonoBehaviour {
                 if(clientAnswersList[j] == i)
                 {
                     Debug.Log("ClientAnswers " + j + ": " + clientAnswersList[j]);
-                    answerBar[i].gameObject.GetComponent<Image>().fillAmount += graphIncr;
+                    answerBarList[i].gameObject.GetComponent<Image>().fillAmount += graphIncr;
                     sameAnswers++;
                     
                     Debug.Log("nClient: " + clientAnswersList.Count);
                 } 
 
                 float finalPerc = sameAnswers * percSingleClient;
-                answerBar[i].gameObject.transform.GetChild(0).GetComponent<Text>().text = (finalPerc.ToString() + "%");
+                answerBarList[i].gameObject.transform.GetChild(0).GetComponent<Text>().text = (finalPerc.ToString() + "%");
 
             }         
         }

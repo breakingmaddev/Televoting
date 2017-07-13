@@ -7,7 +7,10 @@ using UnityEngine.Networking;
 public class ServerBehaviour : NetworkBehaviour
 {
     public List<ClientsClass> clientsList = new List<ClientsClass>();
-    public Dictionary<int, List<ClientsClass>> dictVoters = new Dictionary<int, List<ClientsClass>>();
+    
+    //public Dictionary<int, List<ClientsClass>> dictVoters = new Dictionary<int, List<ClientsClass>>();
+
+    public List<GameSessionClass> gameSession = new List<GameSessionClass>();
 
     // Contatore della domanda corrente per il dictVoters
     public int currentQuestion = 0;
@@ -64,7 +67,8 @@ public class ServerBehaviour : NetworkBehaviour
         questionString = readedData[startCSVIndex];
         questionText.text = questionString;
 
-        for (int i = endCSVIndex; i < 20; i++)
+        //DAVID DEVE SISTEMARE QUESTA COSA DEL 1000
+        for (int i = endCSVIndex; i < 1000; i++)
         {
             if (!readedData[i].Contains(endLine))
             {
@@ -88,18 +92,25 @@ public class ServerBehaviour : NetworkBehaviour
         }
     }
 
+    //Esegue le funzionalità del bottone Next
     public void NextQuestion()
     {
+        StartCoroutine(CallResetOnClient());
+        answerStringList.Clear();
         currentQuestion++;
+        FillDictionary();
         endCSVIndex ++;
         startCSVIndex = endCSVIndex;
+        timerText.text = ("Timer");
         SetDataFromCSV();
+        refGL.RestartGraph();
     }
 
     private void FillDictionary()
     {
         // Aggiungo al dizionario la lista di Domande e la lista di ClientsClass
-        dictVoters.Add(currentQuestion, clientsList);
+        gameSession.Add(new GameSessionClass());
+        gameSession[currentQuestion].questionIndex = currentQuestion;
     }
 
     // Quando il timer finisce lo resetto e disattivo tutti i bottoni sui client e mi faccio mandare la risposta scelta
@@ -142,16 +153,9 @@ public class ServerBehaviour : NetworkBehaviour
         {
             Debug.LogError(player.GetComponentInChildren<PlayerBehaviour>().name);
         }
-
-
-        //SetQuestionOnClient(questionString);
-
-        //CreateButtonOnClient(answerStringList.Count);
-
-        //SetAnswerOnClient();
     }
 
-
+    //Setta tutto il necessario sui client
     public void SetupClient()
     {
         SetQuestionOnClient(questionString);
@@ -163,6 +167,16 @@ public class ServerBehaviour : NetworkBehaviour
         StartCoroutine(TimerCO());
     }
 
+
+    //Chiama il reset del client
+    public IEnumerator CallResetOnClient()
+    {
+        yield return null;
+        foreach (var player in playerList)
+        {
+            player.GetComponent<PlayerBehaviour>().RpcResetClient();
+        }
+    }
 
     // Crea i pulsanti premibili dai clients
     public void CreateButtonOnClient(int _numberOfString)
@@ -203,19 +217,18 @@ public class ServerBehaviour : NetworkBehaviour
         Debug.LogError("E' stata scelta la risposta " + _answerIndex + " da " + _nameSender);
 
         
-        SetupDictionary(_nameSender, _answerIndex);
+        SetupGameSession(_nameSender, _answerIndex);
 
     }
 
     // Aggiunge le domande e le risposte date da ogni Clients al dizionario
-    public void SetupDictionary(string _nameSender, int _answerIndex)
+    public void SetupGameSession(string _nameSender, int _answerIndex)
     {
         ClientsClass newClient = new ClientsClass(_nameSender, _answerIndex);
         Debug.Log(newClient);
-        
-        clientsList.Add(newClient);
+        gameSession[currentQuestion].clientClassArch.Add(newClient);
 
-        Debug.Log(dictVoters.Keys.Count + " - " + dictVoters.Values.Count);
+        //Debug.Log(dictVoters.Keys.Count + " - " + dictVoters.Values.Count);
         Debug.Log(clientsList.Count);
     }
 }

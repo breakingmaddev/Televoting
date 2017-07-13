@@ -159,4 +159,20 @@ public class PlayerBehaviour : NetworkBehaviour
         }
         indexerAnswer = -1;
     }
+
+
+    // Resetta lo stato del client
+    [ClientRpc]
+    public void RpcResetClient()
+    {
+        Debug.LogWarning("ResetClient");
+        for (int i = 0; i < listButton.Count; i++)
+        {
+            Destroy(listButton[i]);
+        }
+        listButton.Clear();
+        questionText.text = "Question";
+        cancelButton.GetComponent<Button>().interactable = true;    
+    }
+
 }
