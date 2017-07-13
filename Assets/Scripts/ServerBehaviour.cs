@@ -29,7 +29,7 @@ public class ServerBehaviour : NetworkBehaviour
     private char fieldSeparator = ',';
 
     public int startCSVIndex = 0;
-    public int endCSVIndex = 9;
+    private int endCSVIndex = 0;
 
     List<string> readedData = new List<string>();
 
@@ -58,36 +58,41 @@ public class ServerBehaviour : NetworkBehaviour
 
     public void SetDataFromCSV()
     {
+        string endLine = "--";
         Debug.Log("ReadCSV");
         //legge e imposta la domanda
         questionString = readedData[startCSVIndex];
         questionText.text = questionString;
 
-        //while ((currentLine = csvFile.ReadLine()) != null)
-        //{
-
-        //}
-        //    for (int i = 0; i < readedData; i++)
-        //{
-
-        //}
+        for (int i = endCSVIndex; i < 20; i++)
+        {
+            if (!readedData[i].Contains(endLine))
+            {
+                endCSVIndex++;
+            }
+            else
+            {
+                break;
+            }
+            Debug.LogWarning(endCSVIndex);
+        }
 
         //legge la cella in ordine di posizione lungo la prima colonna
         int j = -1;
         startCSVIndex += 1;
         for (int i = startCSVIndex; i < endCSVIndex; i++)
         {
-            Debug.LogWarning("QUANTE VOLTE: " + readedData[i]);
             j++;
             answerStringList.Insert(j, readedData[i]);
+            Debug.Log(answerStringList[j]);
         }
     }
 
     public void NextQuestion()
     {
         currentQuestion++;
-        startCSVIndex += 10;
-        endCSVIndex += 10;
+        endCSVIndex ++;
+        startCSVIndex = endCSVIndex;
         SetDataFromCSV();
     }
 
