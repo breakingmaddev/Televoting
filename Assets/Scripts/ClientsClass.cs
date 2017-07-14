@@ -8,11 +8,12 @@ public class ClientsClass
 {
 
     public string nameClient;
-    public int answerChoose;
+    public int indexAnswerChoose;
+    public string answerChoose;
 
-    public ClientsClass(string _name, int _answerIndex)
+    public ClientsClass(string _name, int _indexAnswerChoose, string _answerStringText)
     {
         nameClient = _name;
-        answerChoose = _answerIndex;
+        answerChoose = _answerStringText;
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public class GameSessionClass
 {
-    public int questionIndex;
+    public string  questionStringText;
     public List<ClientsClass> clientClassArch = new List<ClientsClass>();
 
 }

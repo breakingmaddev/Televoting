@@ -57,7 +57,7 @@ public class ServerBehaviour : NetworkBehaviour
         //Metodo che passa il testo della domanda da file
         SetDataFromCSV();
 
-        Invoke("FillDictionary", 1f);
+        Invoke("CreateGameSession", 1f);
     }
 
     public void SetDataFromCSV()
@@ -99,19 +99,19 @@ public class ServerBehaviour : NetworkBehaviour
         StartCoroutine(CallResetOnClient());
         answerStringList.Clear();
         currentQuestion++;
-        FillDictionary();
         endCSVIndex ++;
         startCSVIndex = endCSVIndex;
         timerText.text = ("Timer");
         SetDataFromCSV();
+        CreateNewGameSession();
         refGL.RestartGraph();
     }
 
-    private void FillDictionary()
+    //Crea la nuova GameSession e ci aggiunge la domanda corrente
+    private void CreateNewGameSession()
     {
-        // Aggiungo al dizionario la lista di Domande e la lista di ClientsClass
         gameSession.Add(new GameSessionClass());
-        gameSession[currentQuestion].questionIndex = currentQuestion;
+        gameSession[currentQuestion].questionStringText = questionString;
     }
 
     // Quando il timer finisce lo resetto e disattivo tutti i bottoni sui client e mi faccio mandare la risposta scelta
@@ -222,10 +222,12 @@ public class ServerBehaviour : NetworkBehaviour
 
     }
 
-    // Aggiunge le domande e le risposte date da ogni Clients al dizionario
+    // Aggiunge le domande e le risposte date da ogni Clients alla Game Session corrente
     public void SetupGameSession(string _nameSender, int _answerIndex)
     {
-        ClientsClass newClient = new ClientsClass(_nameSender, _answerIndex);
+        //estrapolo il testo della risposta in base all'indice passato
+        string _answerStringTextToPass = answerStringList[_answerIndex];
+        ClientsClass newClient = new ClientsClass(_nameSender, _answerIndex, _answerStringTextToPass);
         Debug.Log(newClient);
         gameSession[currentQuestion].clientClassArch.Add(newClient);
 
@@ -233,21 +235,25 @@ public class ServerBehaviour : NetworkBehaviour
         Debug.Log(clientsList.Count);
     }
 
-    // Add data to CSV file
+    // Salva i dati nel file CSV
     public void SaveGameSessionData()
     {
-
+        //Qui prende il path dove salvare il file
         string filePath = getPath();
 
+        //Questo è il writer che scrive nel path che gl iabbiamo dato
         StreamWriter writer = new StreamWriter(filePath);
 
-        writer.WriteLine("Index Domanda, Utente, Risposta");
+        //Qui descriviamo i titoli delle colonne cioè i nomi delle categorie che appariranno nel file
+        writer.WriteLine("Domanda, Utente, Risposta");
 
+        //Qui scorriamo le game session e per ognuna scorriamo la lista di client class estraendo i dati che ci servono
         for (int i = 0; i < gameSession.Count; i++)
         {
             for (int j = 0; j < gameSession[i].clientClassArch.Count; j++)
             {
-                writer.WriteLine(gameSession[i].questionIndex.ToString() +
+                //Scrive nel file i dati
+                writer.WriteLine(gameSession[i].questionStringText.ToString() +
                 "," + gameSession[i].clientClassArch[j].nameClient.ToString() +
                 "," + gameSession[i].clientClassArch[j].answerChoose.ToString());
             }
@@ -256,19 +262,12 @@ public class ServerBehaviour : NetworkBehaviour
 
         writer.Flush();
 
+        //Chiudiamo il file
         writer.Close();
 
-        /*
-        // Following line adds data to CSV file
-        File.AppendAllText(getPath() + "/Resources/Log_Televoting.csv", lineSeparater + rollNoInputField.text + fieldSeparator + nameInputField.text);
-
-#if UNITY_EDITOR
-        UnityEditor.AssetDatabase.Refresh();
-#endif
-*/
     }
 
-    // Get path for given CSV file
+    // Metodo che prende il path in base alla piattaforma
     private static string getPath()
     {
 #if UNITY_EDITOR
@@ -286,7 +285,7 @@ public class ServerBehaviour : NetworkBehaviour
 #endif
     }
 
-    // Get the path in iOS device
+    // Metodo che prende il path sui device iOS (in caso ci serva)
     private static string GetiPhoneDocumentsPath()
     {
         string path = Application.dataPath.Substring(0, Application.dataPath.Length - 5);

@@ -92,7 +92,7 @@ public class GraphLogic : MonoBehaviour {
         clientList.AddRange(refSB.gameSession[refSB.currentQuestion].clientClassArch);
         for (int i = 0; i < clientList.Count; i++)
         {
-            clientAnswersList.Add(clientList[i].answerChoose);
+            clientAnswersList.Add(clientList[i].indexAnswerChoose);
         }
         FillGraph();
         refSB.SaveGameSessionData();
