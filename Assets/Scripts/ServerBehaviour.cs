@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using System.IO;
 
 public class ServerBehaviour : NetworkBehaviour
 {
@@ -230,6 +231,67 @@ public class ServerBehaviour : NetworkBehaviour
 
         //Debug.Log(dictVoters.Keys.Count + " - " + dictVoters.Values.Count);
         Debug.Log(clientsList.Count);
+    }
+
+    // Add data to CSV file
+    public void SaveGameSessionData()
+    {
+
+        string filePath = getPath();
+
+        StreamWriter writer = new StreamWriter(filePath);
+
+        writer.WriteLine("Index Domanda, Utente, Risposta");
+
+        for (int i = 0; i < gameSession.Count; i++)
+        {
+            for (int j = 0; j < gameSession[i].clientClassArch.Count; j++)
+            {
+                writer.WriteLine(gameSession[i].questionIndex.ToString() +
+                "," + gameSession[i].clientClassArch[j].nameClient.ToString() +
+                "," + gameSession[i].clientClassArch[j].answerChoose.ToString());
+            }
+            
+        }
+
+        writer.Flush();
+
+        writer.Close();
+
+        /*
+        // Following line adds data to CSV file
+        File.AppendAllText(getPath() + "/Resources/Log_Televoting.csv", lineSeparater + rollNoInputField.text + fieldSeparator + nameInputField.text);
+
+#if UNITY_EDITOR
+        UnityEditor.AssetDatabase.Refresh();
+#endif
+*/
+    }
+
+    // Get path for given CSV file
+    private static string getPath()
+    {
+#if UNITY_EDITOR
+        Directory.CreateDirectory(Application.persistentDataPath + "/LogData");
+        return Application.persistentDataPath + "/LogData/" + "Log_Televoting.csv";
+#elif UNITY_STANDALONE_WIN
+        Directory.CreateDirectory(Application.persistentDataPath + "/LogData");
+        return Application.persistentDataPath + "/LogData/" + "Log_Televoting.csv";
+#elif UNITY_ANDROID
+		return Application.persistentDataPath;// +fileName;
+#elif UNITY_IPHONE
+		return GetiPhoneDocumentsPath();// +"/"+fileName;
+#else
+		return Application.dataPath;// +"/"+ fileName;
+#endif
+    }
+
+    // Get the path in iOS device
+    private static string GetiPhoneDocumentsPath()
+    {
+        string path = Application.dataPath.Substring(0, Application.dataPath.Length - 5);
+        path = path.Substring(0, path.LastIndexOf('/'));
+        return path + "/Documents";
     }
 }
 

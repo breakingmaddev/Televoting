@@ -95,6 +95,7 @@ public class GraphLogic : MonoBehaviour {
             clientAnswersList.Add(clientList[i].answerChoose);
         }
         FillGraph();
+        refSB.SaveGameSessionData();
         nextQuestionButton.SetActive(true);
     }
 
