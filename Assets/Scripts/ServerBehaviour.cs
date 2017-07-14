@@ -225,13 +225,21 @@ public class ServerBehaviour : NetworkBehaviour
     // Aggiunge le domande e le risposte date da ogni Clients alla Game Session corrente
     public void SetupGameSession(string _nameSender, int _answerIndex)
     {
+        string _answerStringTextToPass;
         //estrapolo il testo della risposta in base all'indice passato
-        string _answerStringTextToPass = answerStringList[_answerIndex];
+        if (_answerIndex != -1)
+        {
+            _answerStringTextToPass = answerStringList[_answerIndex];
+        } else
+        {
+            _answerStringTextToPass = "Astenuto";
+        }
+
         ClientsClass newClient = new ClientsClass(_nameSender, _answerIndex, _answerStringTextToPass);
         Debug.Log(newClient);
         gameSession[currentQuestion].clientClassArch.Add(newClient);
 
-        //Debug.Log(dictVoters.Keys.Count + " - " + dictVoters.Values.Count);
+        Debug.Log("ANSWER INDEX: " + _answerIndex + " e ANSWER STRING: " +_answerStringTextToPass);
         Debug.Log(clientsList.Count);
     }
 
