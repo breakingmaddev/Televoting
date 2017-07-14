@@ -236,7 +236,7 @@ public class ServerBehaviour : NetworkBehaviour
     }
 
     // Salva i dati nel file CSV
-    public void SaveGameSessionData()
+    public void SaveFileGameSessionData()
     {
         //Qui prende il path dove salvare il file
         string filePath = getPath();

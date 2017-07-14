@@ -14,6 +14,7 @@ public class ClientsClass
     public ClientsClass(string _name, int _indexAnswerChoose, string _answerStringText)
     {
         nameClient = _name;
+        indexAnswerChoose = _indexAnswerChoose;
         answerChoose = _answerStringText;
     }
 }
