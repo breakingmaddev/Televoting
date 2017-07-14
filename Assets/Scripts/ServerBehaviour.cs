@@ -57,7 +57,7 @@ public class ServerBehaviour : NetworkBehaviour
         //Metodo che passa il testo della domanda da file
         SetDataFromCSV();
 
-        Invoke("CreateGameSession", 1f);
+        Invoke("CreateNewGameSession", 1f);
     }
 
     public void SetDataFromCSV()
