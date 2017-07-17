@@ -27,6 +27,8 @@ namespace Prototype.NetworkLobby
             imAClient = false;
 #elif UNITY_STANDALONE_WIN
             imAClient = false;
+#elif UNITY_STANDALONE_MAC
+            imAClient = false;
 #elif UNITY_ANDROID
             imAClient = true;
 #elif UNITY_IPHONE
