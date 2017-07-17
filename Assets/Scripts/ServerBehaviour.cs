@@ -117,7 +117,7 @@ public class ServerBehaviour : NetworkBehaviour
             currentQuestion++;
             endCSVIndex++;
             startCSVIndex = endCSVIndex;
-            timerText.text = ("Timer");
+            timerText.text = ("Tempo");
             SetDataFromCSV();
             CreateNewGameSession();
             refGL.RestartGraph();
@@ -200,7 +200,7 @@ public class ServerBehaviour : NetworkBehaviour
         {
             player.GetComponent<PlayerBehaviour>().RpcResetClient(noMoreQuestion);
         }
-        yield return null;// new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.1f);
     }
 
     // Crea i pulsanti premibili dai clients
