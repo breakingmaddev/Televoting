@@ -38,6 +38,8 @@ namespace Prototype.NetworkLobby
         public Text statusInfo;
         public Text hostInfo;
 
+        public GameObject clientCount;
+
         //Client numPlayers from NetworkManager is always 0, so we count (throught connect/destroy in LobbyPlayer) the number
         //of players, so that even client know how many player there is.
         [HideInInspector]
@@ -66,6 +68,24 @@ namespace Prototype.NetworkLobby
             DontDestroyOnLoad(gameObject);
 
             SetServerInfo("Offline", "None");
+        }
+
+        public void Update()
+        {
+            if (clientCount.gameObject.activeSelf && clientCount != null)
+            {
+                int j = 0;
+                for (int i = 0; i < lobbySlots.Length; ++i)
+                {
+                    if (lobbySlots[i] != null)
+                        j++;
+                }
+                clientCount.GetComponent<Text>().text = ("UTENTI CONNESSI IN ATTESA: " + j.ToString());
+            }
+
+            if (Input.GetKeyDown(KeyCode.Z))
+                StartCoroutine(ServerCountdownCoroutine());
+
         }
 
         public override void OnLobbyClientSceneChanged(NetworkConnection conn)
@@ -417,12 +437,6 @@ namespace Prototype.NetworkLobby
         {
             ChangeTo(mainMenuPanel);
             infoPanel.Display("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), "Close", null);
-        }
-
-        private void Update()
-        {
-            if(Input.GetKeyDown(KeyCode.Z))
-                StartCoroutine(ServerCountdownCoroutine());
         }
     }
 }

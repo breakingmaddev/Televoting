@@ -63,14 +63,6 @@ namespace Prototype.NetworkLobby
             
         }
 
-        public void Update()
-        {
-            if (clientCount.gameObject.activeSelf && clientCount != null)
-            {
-                clientCount.GetComponent<Text>().text = ("UTENTI CONNESSI IN ATTESA: " + lobbyManager._playerNumber.ToString());
-            }
-        }
-
         public void OnEnable()
         {
             lobbyManager.topPanel.ToggleVisibility(true);
