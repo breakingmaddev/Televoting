@@ -46,6 +46,7 @@ namespace Prototype.NetworkLobby
                 yield return ww;
                 ipInput.text = ww.text;
                 Debug.Log(ww.text);
+                OnClickJoin();
             }
             else
             {

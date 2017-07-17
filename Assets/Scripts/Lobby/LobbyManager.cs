@@ -418,5 +418,11 @@ namespace Prototype.NetworkLobby
             ChangeTo(mainMenuPanel);
             infoPanel.Display("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), "Close", null);
         }
+
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.Z))
+                StartCoroutine(ServerCountdownCoroutine());
+        }
     }
 }
