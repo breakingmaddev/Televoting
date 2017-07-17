@@ -15,6 +15,8 @@ namespace Prototype.NetworkLobby
         public InputField ipInput;
         public InputField matchNameInput;
 
+        public GameObject clientCount;
+
         //dichiaro un booleano per specificare in fase di build dell'app se parto come client di recuperare l'ip del server da internet
         public bool imAClient = false;
 
@@ -46,17 +48,27 @@ namespace Prototype.NetworkLobby
                 yield return ww;
                 ipInput.text = ww.text;
                 Debug.Log(ww.text);
+
                 OnClickJoin();
             }
             else
             {
+                clientCount.SetActive(true);
                 string serverIpAdress = Network.player.ipAddress.ToString();
                 WWW w = new WWW(URL_to_script + serverIpAdress);
                 yield return w;
-                Debug.Log("scrivo sul txt online il mio indirizzo ip in qualità di server " + serverIpAdress);
-
+                //Debug.Log("scrivo sul txt online il mio indirizzo ip in qualità di server " + serverIpAdress);
+                OnClickDedicated();
             }
             
+        }
+
+        public void Update()
+        {
+            if (clientCount.gameObject.activeSelf)
+            {
+                clientCount.GetComponent<Text>().text = ("UTENTI CONNESSI IN ATTESA: " + lobbyManager.lobbySlots.Length.ToString());
+            }
         }
 
         public void OnEnable()
