@@ -15,6 +15,33 @@ namespace Prototype.NetworkLobby
         public InputField ipInput;
         public InputField matchNameInput;
 
+        //dichiaro un booleano per specificare in fase di build dell'app se parto come client di recuperare l'ip del server da internet
+        public bool imAClient = false;
+
+        string url = "http://www.danielesangineto.com/ip.txt";
+        string URL_to_script = "http://www.danielesangineto.com./writeIP.php?txt=";
+
+        //recupero dall'url specificato in alto l'indirizzo ip contenuto nel file txt se il booleano imAClient è settato su true
+        IEnumerator Start()
+        {
+            if (imAClient)
+            {
+                var ww = new WWW(url);
+                yield return ww;
+                ipInput.text = ww.text;
+                Debug.Log(ww.text);
+            }
+            else
+            {
+                string serverIpAdress = Network.player.ipAddress.ToString();
+                WWW w = new WWW(URL_to_script + serverIpAdress);
+                yield return w;
+                Debug.Log("scrivo sul txt online il mio indirizzo ip in qualità di server " + serverIpAdress);
+
+            }
+            
+        }
+
         public void OnEnable()
         {
             lobbyManager.topPanel.ToggleVisibility(true);
