@@ -26,6 +26,9 @@ public class ServerBehaviour : NetworkBehaviour
     public Text feedbackText, questionText, timerText;
     private GraphLogic refGL;
 
+    public GameObject buttonStart;
+    public bool noMoreQuestion;
+
 #region ParserArea
     public TextAsset csvFile; // file CSV da leggere
 
@@ -63,6 +66,7 @@ public class ServerBehaviour : NetworkBehaviour
     public void SetDataFromCSV()
     {
         string endLine = "--";
+        string endFile = "Fine";
         Debug.Log("ReadCSV");
         //legge e imposta la domanda
         questionString = readedData[startCSVIndex];
@@ -77,7 +81,16 @@ public class ServerBehaviour : NetworkBehaviour
             }
             else
             {
-                break;
+                if (readedData[i+1].Contains(endFile))
+                {
+                    Debug.Log("DOMANDE FINITE");
+                    noMoreQuestion = true;
+                    break;
+                } else
+                {
+                    Debug.Log("FINITO DI LEGGERE LE RISPOSTE");
+                    break;
+                } 
             }
             Debug.LogWarning(endCSVIndex);
         }
@@ -96,15 +109,26 @@ public class ServerBehaviour : NetworkBehaviour
     //Esegue le funzionalità del bottone Next
     public void NextQuestion()
     {
-        StartCoroutine(CallResetOnClient());
-        answerStringList.Clear();
-        currentQuestion++;
-        endCSVIndex ++;
-        startCSVIndex = endCSVIndex;
-        timerText.text = ("Timer");
-        SetDataFromCSV();
-        CreateNewGameSession();
-        refGL.RestartGraph();
+        //inserire qui la condizione in base al fatto se ci sono ancora domande o se il televoting è finito
+        if (!noMoreQuestion)
+        {
+            StartCoroutine(CallResetOnClient());
+            answerStringList.Clear();
+            currentQuestion++;
+            endCSVIndex++;
+            startCSVIndex = endCSVIndex;
+            timerText.text = ("Timer");
+            SetDataFromCSV();
+            CreateNewGameSession();
+            refGL.RestartGraph();
+            buttonStart.SetActive(true);
+        } else
+        {
+            StartCoroutine(CallResetOnClient());
+            questionText.text = ("Fine del questionario. Grazie per aver partecipato!");
+            Debug.Log("TELEVOTING FINITO");
+        }
+       
     }
 
     //Crea la nuova GameSession e ci aggiunge la domanda corrente
@@ -127,7 +151,7 @@ public class ServerBehaviour : NetworkBehaviour
         }
 
         //timerCounter = 0;
-        timerText.text = ("Time's Up!");
+        timerText.text = ("Tempo scaduto!");
 
         foreach (var player in playerList)
         {
@@ -172,11 +196,11 @@ public class ServerBehaviour : NetworkBehaviour
     //Chiama il reset del client
     public IEnumerator CallResetOnClient()
     {
-        yield return null;
         foreach (var player in playerList)
         {
-            player.GetComponent<PlayerBehaviour>().RpcResetClient();
+            player.GetComponent<PlayerBehaviour>().RpcResetClient(noMoreQuestion);
         }
+        yield return new WaitForSeconds(0.1f);
     }
 
     // Crea i pulsanti premibili dai clients

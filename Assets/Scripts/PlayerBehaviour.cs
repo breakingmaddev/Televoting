@@ -163,7 +163,7 @@ public class PlayerBehaviour : NetworkBehaviour
 
     // Resetta lo stato del client
     [ClientRpc]
-    public void RpcResetClient()
+    public void RpcResetClient(bool noMoreQuestion)
     {
         Debug.LogWarning("ResetClient");
         for (int i = 0; i < listButton.Count; i++)
@@ -171,8 +171,22 @@ public class PlayerBehaviour : NetworkBehaviour
             Destroy(listButton[i]);
         }
         listButton.Clear();
-        questionText.text = "Question";
-        cancelButton.GetComponent<Button>().interactable = true;    
+
+        //if non ci sono più domande allora metti come stringa "Grazie per aver partecipato!"
+        if (noMoreQuestion)
+        {
+            Debug.Log("GRAZIE PER AVER PARTECIPATO: " + noMoreQuestion);
+            questionText.text = "Fine del questionario. Grazie per aver partecipato!";
+            //cancelButton.GetComponent<Button>().interactable = false;
+            cancelButton.gameObject.SetActive(false);
+        } else
+        {
+            Debug.Log("RESETTATO LA DOMANDA: " + noMoreQuestion);
+            questionText.text = "Attendi la domanda...";
+            cancelButton.GetComponent<Button>().interactable = true;
+        }
+
+          
     }
 
 }
