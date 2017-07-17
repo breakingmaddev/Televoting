@@ -72,7 +72,7 @@ namespace Prototype.NetworkLobby
 
         public void Update()
         {
-            if (clientCount.gameObject.activeSelf && clientCount != null)
+            if (clientCount.gameObject != null && clientCount.gameObject.activeSelf)
             {
                 int j = 0;
                 for (int i = 0; i < lobbySlots.Length; ++i)
