@@ -23,20 +23,20 @@ namespace Prototype.NetworkLobby
         string url = "http://www.danielesangineto.com/ip.txt";
         string URL_to_script = "http://www.danielesangineto.com./writeIP.php?txt=";
 
-//        private void Awake()
-//        {
-//#if UNITY_EDITOR
-//            imAClient = false;
-//#elif UNITY_STANDALONE_WIN
-//            imAClient = false;
-//#elif UNITY_STANDALONE_MAC
-//            imAClient = false;
-//#elif UNITY_ANDROID
-//            imAClient = true;
-//#elif UNITY_IPHONE
-//            imAClient = true;
-//#endif
-//        }
+        private void Awake()
+        {
+#if UNITY_EDITOR
+            imAClient = false;
+#elif UNITY_STANDALONE_WIN
+            imAClient = false;
+#elif UNITY_STANDALONE_MAC
+            imAClient = false;
+#elif UNITY_ANDROID
+            imAClient = true;
+#elif UNITY_IPHONE
+            imAClient = true;
+#endif
+        }
 
 
         //recupero dall'url specificato in alto l'indirizzo ip contenuto nel file txt se il booleano imAClient è settato su true
