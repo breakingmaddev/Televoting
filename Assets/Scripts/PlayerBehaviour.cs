@@ -166,6 +166,7 @@ public class PlayerBehaviour : NetworkBehaviour
     public void RpcResetClient(bool noMoreQuestion)
     {
         Debug.LogWarning("ResetClient");
+        indexerAnswer = -1;
         for (int i = 0; i < listButton.Count; i++)
         {
             Destroy(listButton[i]);
@@ -185,8 +186,6 @@ public class PlayerBehaviour : NetworkBehaviour
             questionText.text = "Attendi la domanda...";
             cancelButton.GetComponent<Button>().interactable = true;
         }
-
-          
     }
 
 }
