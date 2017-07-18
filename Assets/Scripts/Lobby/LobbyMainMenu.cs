@@ -52,7 +52,7 @@ namespace Prototype.NetworkLobby
                     yield return ww;
                     ipInput.text = ww.text;
                     Debug.Log(ww.text);
-
+                    clientPanel.SetActive(true);
                     OnClickJoin();
                 }
                 else
