@@ -17,6 +17,7 @@ namespace Prototype.NetworkLobby
 
         public GameObject clientCount;
         public GameObject startVoting;
+        public InputField ipManual;
 
         //dichiaro un booleano per specificare in fase di build dell'app se parto come client di recuperare l'ip del server da internet
         public bool imAClient = false;
@@ -43,26 +44,39 @@ namespace Prototype.NetworkLobby
         //recupero dall'url specificato in alto l'indirizzo ip contenuto nel file txt se il booleano imAClient è settato su true
         IEnumerator Start()
         {
-            if (imAClient)
+            if (Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork)
             {
-                var ww = new WWW(url);
-                yield return ww;
-                ipInput.text = ww.text;
-                Debug.Log(ww.text);
+                if (imAClient)
+                {
+                    var ww = new WWW(url);
+                    yield return ww;
+                    ipInput.text = ww.text;
+                    Debug.Log(ww.text);
 
-                OnClickJoin();
+                    OnClickJoin();
+                }
+                else
+                {
+                    clientCount.SetActive(true);
+                    startVoting.SetActive(true);
+                    string serverIpAdress = Network.player.ipAddress.ToString();
+                    WWW w = new WWW(URL_to_script + serverIpAdress);
+                    yield return w;
+                    //Debug.Log("scrivo sul txt online il mio indirizzo ip in qualità di server " + serverIpAdress);
+                    OnClickDedicated();
+                }
             }
+
             else
             {
-                clientCount.SetActive(true);
-                startVoting.SetActive(true);
-                string serverIpAdress = Network.player.ipAddress.ToString();
-                WWW w = new WWW(URL_to_script + serverIpAdress);
-                yield return w;
-                //Debug.Log("scrivo sul txt online il mio indirizzo ip in qualità di server " + serverIpAdress);
-                OnClickDedicated();
-            }
-            
+                ipManual.gameObject.SetActive(true);
+                clientCount.SetActive(false);
+                startVoting.SetActive(false);
+
+                ipManual.onEndEdit.AddListener(onEndEditIP);
+
+                ipInput.text = ipManual.text;
+            }           
         }
 
         public void OnEnable()
