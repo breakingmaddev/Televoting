@@ -82,10 +82,13 @@ namespace Prototype.NetworkLobby
                 }
                 clientCount.GetComponent<Text>().text = ("UTENTI CONNESSI IN ATTESA: " + j.ToString());
             }
+            
 
-            if (Input.GetKeyDown(KeyCode.Z))
-                StartCoroutine(ServerCountdownCoroutine());
+        }
 
+        public void StartVoting()
+        {
+            StartCoroutine(ServerCountdownCoroutine());
         }
 
         public override void OnLobbyClientSceneChanged(NetworkConnection conn)

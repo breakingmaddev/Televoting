@@ -16,6 +16,7 @@ namespace Prototype.NetworkLobby
         public InputField matchNameInput;
 
         public GameObject clientCount;
+        public GameObject startVoting;
 
         //dichiaro un booleano per specificare in fase di build dell'app se parto come client di recuperare l'ip del server da internet
         public bool imAClient = false;
@@ -54,6 +55,7 @@ namespace Prototype.NetworkLobby
             else
             {
                 clientCount.SetActive(true);
+                startVoting.SetActive(true);
                 string serverIpAdress = Network.player.ipAddress.ToString();
                 WWW w = new WWW(URL_to_script + serverIpAdress);
                 yield return w;
