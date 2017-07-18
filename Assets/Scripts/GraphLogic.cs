@@ -72,8 +72,8 @@ public class GraphLogic : MonoBehaviour {
             //Qua inseriamo il testo e il colore della risposta e della percentuale
             Debug.LogWarning("answer in graph: " + refSB.answerStringList[i]);
             answerBarList[i].gameObject.transform.GetChild(1).GetComponent<Text>().text = refSB.answerStringList[i];
-            answerBarList[i].gameObject.transform.GetChild(1).GetComponent<Text>().color = answerColors[i];
-            answerBarList[i].gameObject.transform.GetChild(0).GetComponent<Text>().color = answerColors[i];
+            //answerBarList[i].gameObject.transform.GetChild(1).GetComponent<Text>().color = answerColors[i];
+            //answerBarList[i].gameObject.transform.GetChild(0).GetComponent<Text>().color = answerColors[i];
         }
         //ReadData();
         //FillGraph();
