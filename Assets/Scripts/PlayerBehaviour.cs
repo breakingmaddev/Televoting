@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class PlayerBehaviour : NetworkBehaviour
 {
@@ -180,6 +181,7 @@ public class PlayerBehaviour : NetworkBehaviour
             questionText.text = "Fine del questionario. Grazie per aver partecipato!";
             //cancelButton.GetComponent<Button>().interactable = false;
             cancelButton.gameObject.SetActive(false);
+            StartCoroutine(ChangeScene());
         } else
         {
             Debug.Log("RESETTATO LA DOMANDA: " + noMoreQuestion);
@@ -188,4 +190,9 @@ public class PlayerBehaviour : NetworkBehaviour
         }
     }
 
+    public IEnumerator ChangeScene()
+    {
+        yield return new WaitForSeconds(5f);
+        SceneManager.LoadScene(0);
+    }
 }

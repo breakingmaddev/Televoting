@@ -164,6 +164,11 @@ public class ServerBehaviour : NetworkBehaviour
         yield break;
     }
 
+    public void StopTimer ()
+    {
+        timerCounter = 0;
+    }
+
     // Mette tutti i giocatori nella lista PlayerList
     public IEnumerator AddPlayerCO()
     {

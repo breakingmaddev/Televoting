@@ -39,6 +39,8 @@ namespace Prototype.NetworkLobby
         public Text hostInfo;
 
         public GameObject clientCount;
+        public GameObject serverPanel;
+        public GameObject clientPanel;
 
         //Client numPlayers from NetworkManager is always 0, so we count (throught connect/destroy in LobbyPlayer) the number
         //of players, so that even client know how many player there is.
