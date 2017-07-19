@@ -27,6 +27,7 @@ public class ServerBehaviour : NetworkBehaviour
     private GraphLogic refGL;
 
     public GameObject buttonStart;
+    public GameObject buttonStop;
     public bool noMoreQuestion;
 
 #region ParserArea
@@ -159,6 +160,7 @@ public class ServerBehaviour : NetworkBehaviour
             player.GetComponent<PlayerBehaviour>().RpcSelectedAnswer();
         }
 
+        buttonStop.SetActive(false);
         StartCoroutine(refGL.CallGraphSetup());
         
         yield break;
