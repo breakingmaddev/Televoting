@@ -315,6 +315,9 @@ public class ServerBehaviour : NetworkBehaviour
 #elif UNITY_STANDALONE_WIN
         Directory.CreateDirectory(Application.persistentDataPath + "/LogData");
         return Application.persistentDataPath + "/LogData/" + "Log_Televoting.csv";
+#elif UNITY_STANDALONE_MAC
+        Directory.CreateDirectory(Application.persistentDataPath + "/LogData");
+        return Application.persistentDataPath + "/LogData/" + "Log_Televoting.csv";
 #elif UNITY_ANDROID
 		return Application.persistentDataPath;// +fileName;
 #elif UNITY_IPHONE

@@ -13,6 +13,7 @@ public class PlayerBehaviour : NetworkBehaviour
 
     private ServerBehaviour refSB;
     private GameObject lastClicked;
+    private GameObject inputField;
 
     public List<GameObject> listButton = new List<GameObject>();
 
@@ -26,9 +27,10 @@ public class PlayerBehaviour : NetworkBehaviour
 
     private void Start()
     {
+        inputField = GameObject.FindGameObjectWithTag("NewName");
         StartCoroutine(SearchSBCO());
         StartCoroutine(DisableOtherClientCO());
-        Debug.LogError("Sono nell'Awake di PlayerBehaviour");
+        Debug.LogError("Sono nello Start di PlayerBehaviour");
     }
 
     // Cerco il referimento al Server
@@ -49,6 +51,7 @@ public class PlayerBehaviour : NetworkBehaviour
         yield return new WaitForSeconds(1f);
         playerIdentifier = SystemInfo.deviceUniqueIdentifier;
         this.gameObject.name = playerIdentifier;
+        ChangeClientName();
         List<GameObject> playerList = new List<GameObject>();
         playerList.AddRange(GameObject.FindGameObjectsWithTag("Player"));
 
@@ -60,6 +63,15 @@ public class PlayerBehaviour : NetworkBehaviour
             }
         }
         identifierText.text = this.gameObject.name;
+    }
+
+    public void ChangeClientName()
+    {
+        string clientNewName = inputField.GetComponent<Text>().text;
+        if(clientNewName != "")
+        {
+            this.gameObject.name = clientNewName;
+        } 
     }
 
     // Setta il testo alla domanda
