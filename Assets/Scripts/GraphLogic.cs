@@ -94,9 +94,10 @@ public class GraphLogic : MonoBehaviour {
         {
             clientAnswersList.Add(clientList[i].indexAnswerChoose);
         }
+        nextQuestionButton.SetActive(true);
         FillGraph();
         refSB.SaveFileGameSessionData();
-        nextQuestionButton.SetActive(true);
+        
     }
 
     //Riempie ogni singola barra in base a quanti utenti hanno dato quella specifica risposta
