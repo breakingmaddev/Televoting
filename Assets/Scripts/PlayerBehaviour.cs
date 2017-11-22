@@ -30,7 +30,7 @@ public class PlayerBehaviour : NetworkBehaviour
         inputField = GameObject.FindGameObjectWithTag("NewName");
         StartCoroutine(SearchSBCO());
         StartCoroutine(DisableOtherClientCO());
-        Debug.LogError("Sono nello Start di PlayerBehaviour");
+        Debug.Log("Sono nello Start di PlayerBehaviour");
     }
 
     // Cerco il referimento al Server
@@ -41,7 +41,7 @@ public class PlayerBehaviour : NetworkBehaviour
             refSB = FindObjectOfType<ServerBehaviour>();
             yield return null;
         }
-        Debug.LogError("Ho trovato Server Behaviour");
+        Debug.Log("Ho trovato Server Behaviour");
         yield break;
     }
 
@@ -67,11 +67,14 @@ public class PlayerBehaviour : NetworkBehaviour
 
     public void ChangeClientName()
     {
-        string clientNewName = inputField.GetComponent<Text>().text;
-        if(clientNewName != "")
+        if(inputField.GetComponent<Text>().text == "")
         {
-            this.gameObject.name = clientNewName;
-        } 
+            string clientNewName = inputField.GetComponent<Text>().text;
+            if (clientNewName != "")
+            {
+                this.gameObject.name = clientNewName;
+            }
+        }
     }
 
     // Setta il testo alla domanda
@@ -79,7 +82,7 @@ public class PlayerBehaviour : NetworkBehaviour
     public void RpcSetQuestion(string _question)
     {
         questionText.text = _question;
-        Debug.LogError("Io Client mi sono settato la domanda");
+        Debug.Log("Io Client mi sono settato la domanda");
     }
 
     // Crea il numero di bottoni che il Server gli passa
@@ -94,7 +97,7 @@ public class PlayerBehaviour : NetworkBehaviour
             newPlayerBase.name = "Answer " + i;
             newPlayerBase.GetComponent<Button>().onClick.AddListener(DoSelectAnswer);
             listButton.Add(newPlayerBase);
-            Debug.LogError("Io Client mi sono creato il bottone " + newPlayerBase.name);
+            Debug.Log("Io Client mi sono creato il bottone " + newPlayerBase.name);
         }        
     }
 
@@ -110,7 +113,7 @@ public class PlayerBehaviour : NetworkBehaviour
     {
         answerCounter = _answerIndex + 1;
         listButton[_answerIndex].GetComponentInChildren<Text>().text = (/*answerCounter +". " +*/ _answerText);
-        Debug.LogError("Io Client mi sono settato la risposta del bottone " + listButton[_answerIndex]);
+        Debug.Log("Io Client mi sono settato la risposta del bottone " + listButton[_answerIndex]);
     }
 
     // Seleziona la risposta, la rende verde e poi rende tutti non interattivi
@@ -126,7 +129,7 @@ public class PlayerBehaviour : NetworkBehaviour
             if (listButton[i].GetComponent<Button>() != lastClicked.GetComponent<Button>())
             {
                 listButton[i].GetComponent<Button>().interactable = false;
-                Debug.LogError("Settati tutti gli altri bottoni non interagibili ");
+                Debug.Log("Settati tutti gli altri bottoni non interagibili ");
             }
 
             else
@@ -178,7 +181,7 @@ public class PlayerBehaviour : NetworkBehaviour
     [ClientRpc]
     public void RpcResetClient(bool noMoreQuestion)
     {
-        Debug.LogWarning("ResetClient");
+        Debug.Log("ResetClient");
         indexerAnswer = -1;
         for (int i = 0; i < listButton.Count; i++)
         {

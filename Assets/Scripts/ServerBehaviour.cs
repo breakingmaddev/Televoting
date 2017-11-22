@@ -64,6 +64,25 @@ public class ServerBehaviour : NetworkBehaviour
         Invoke("CreateNewGameSession", 1f);
     }
 
+
+    //Controlla se ci sono giocatori che hanno abbandonato la sessione e li rimuove dalla playerlist
+    private void CleanPlayerList ()
+    {
+
+        Debug.Log("CLEAN");
+
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            if (playerList[i] == null)
+                playerList.RemoveAt(i);
+        }
+
+        if(playerList.Count == 0)
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
+    }
+
     public void SetDataFromCSV()
     {
         string endLine = "--";
@@ -154,6 +173,8 @@ public class ServerBehaviour : NetworkBehaviour
         //timerCounter = 0;
         timerText.text = ("Tempo scaduto!");
 
+        CleanPlayerList();
+
         foreach (var player in playerList)
         {
             player.GetComponent<PlayerBehaviour>().RpcDeactiveButton();
@@ -178,12 +199,14 @@ public class ServerBehaviour : NetworkBehaviour
         // lista di player (clients)
         playerList.AddRange(GameObject.FindGameObjectsWithTag("Player"));
         
-        Debug.LogError("Ho fatto la ricerca dei giocatori");
-        Debug.LogError("I giocatori ora in gioco sono: " + playerList.Count);
+        Debug.Log("Ho fatto la ricerca dei giocatori");
+        Debug.Log("I giocatori ora in gioco sono: " + playerList.Count);
+
+        CleanPlayerList();
 
         foreach (var player in playerList)
         {
-            Debug.LogError(player.GetComponentInChildren<PlayerBehaviour>().name);
+            Debug.Log(player.GetComponentInChildren<PlayerBehaviour>().name);
         }
     }
 
@@ -203,6 +226,9 @@ public class ServerBehaviour : NetworkBehaviour
     //Chiama il reset del client
     public IEnumerator CallResetOnClient()
     {
+
+        CleanPlayerList();
+
         foreach (var player in playerList)
         {
             player.GetComponent<PlayerBehaviour>().RpcResetClient(noMoreQuestion);
@@ -213,6 +239,9 @@ public class ServerBehaviour : NetworkBehaviour
     // Crea i pulsanti premibili dai clients
     public void CreateButtonOnClient(int _numberOfString)
     {
+
+        CleanPlayerList();
+
         foreach (var player in playerList)
         {
             player.GetComponent<PlayerBehaviour>().RpcCreateUIButton(_numberOfString);
@@ -222,11 +251,14 @@ public class ServerBehaviour : NetworkBehaviour
     // Setta la domanda a tutti i clients
     public void SetQuestionOnClient(string _question)
     {
+
+        CleanPlayerList();
+
         foreach (var player in playerList)
         {
             player.GetComponent<PlayerBehaviour>().RpcSetQuestion(_question);
         }
-        Debug.LogError("Ho inviato la domanda a tutti i giocaotri");
+        Debug.Log("Ho inviato la domanda a tutti i giocaotri");
     }
 
     // Mette il testo delle risposte dentro i pulsanti
@@ -234,19 +266,20 @@ public class ServerBehaviour : NetworkBehaviour
     {
         for (int i = 0; i < answerStringList.Count; i++)
         {
+            CleanPlayerList();
             foreach (var player in playerList)
             {
                 player.GetComponent<PlayerBehaviour>().DoRpcSetAnswer(answerStringList[i].ToString(), i);
             }
         }
-        Debug.LogError("Ho inviato le risposte in tutti i giocatori");
+        Debug.Log("Ho inviato le risposte in tutti i giocatori");
     }
     
     // Prendo la risposta scelta dai clients
     public void SetAnswerOnServer(string _nameSender, int _answerIndex)
     {
         feedbackText.text = "E' stata scelta la risposta " + _answerIndex + " da " + _nameSender;
-        Debug.LogError("E' stata scelta la risposta " + _answerIndex + " da " + _nameSender);
+        Debug.Log("E' stata scelta la risposta " + _answerIndex + " da " + _nameSender);
 
         
         SetupGameSession(_nameSender, _answerIndex);

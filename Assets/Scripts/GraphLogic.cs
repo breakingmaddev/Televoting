@@ -38,7 +38,7 @@ public class GraphLogic : MonoBehaviour {
             refSB = FindObjectOfType<ServerBehaviour>();
             yield return null;
         }
-        Debug.LogError("Ho trovato Server Behaviour");
+        Debug.Log("Ho trovato Server Behaviour");
         yield break;
     }
 
