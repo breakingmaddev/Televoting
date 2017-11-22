@@ -106,10 +106,10 @@ public class GraphLogic : MonoBehaviour {
     { 
         float graphIncr = 1f / clientAnswersList.Count;
         //Serve a far comparire il count di quante volte è stata scelta quella domanda
-        int sameAnswers = 0;
+        float sameAnswers = 0f;
         Debug.Log("Graph Incr: " + graphIncr);
-        float noVoterCount = 0;
-        int percSingleClient = (100 / clientAnswersList.Count);
+        float noVoterCount = 0f;
+        float percSingleClient = (100f / clientAnswersList.Count);
         Debug.Log("PercSingleClient: " + percSingleClient);
 
         for (int i = 0; i < answerBarList.Count; i++)
@@ -126,7 +126,10 @@ public class GraphLogic : MonoBehaviour {
                     Debug.Log("nClient: " + clientAnswersList.Count);
                 } 
 
-                int finalPerc = sameAnswers * percSingleClient;
+                float finalPerc = sameAnswers * percSingleClient;
+                if (finalPerc >= 99f)
+                    finalPerc = 100;
+                finalPerc = (int)finalPerc;
                 answerBarList[i].gameObject.transform.GetChild(0).GetComponent<Text>().text = (finalPerc.ToString() + "%");
 
             }         
@@ -143,8 +146,9 @@ public class GraphLogic : MonoBehaviour {
         }
 
         float percNoVoters = noVoterCount * percSingleClient;
-        if (percNoVoters == 99)
+        if (percNoVoters >= 99f)
             percNoVoters = 100;
+        percNoVoters = (int)percNoVoters;
         noVoterText.text = ("Astenuti: " + percNoVoters.ToString() + "%");
     }
 
